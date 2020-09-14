@@ -22,7 +22,20 @@ const MatrixTable: import('react').FC<Omit<Props, 'initialMatrix'>> = ({ classNa
   // Handlers ---------------------------------------------------------------- //
   // You can save (to api) the matrix here. Remember to update originalMatrix when done.
   const save = async () => {
+    await fetch('http://localhost:3000/api/save-pricing', {
+      method: 'post',
+      body: JSON.stringify(matrix)
+    })
 
+    dispatch({
+      type: 'SET_ORIGINAL_MATRIX',
+      payload: matrix
+    })
+    
+    dispatch({
+      type: 'SET_EDITABLE_STATE',
+      payload: false
+    })
   }
 
   const makeEditable = () => {
@@ -73,8 +86,8 @@ const MatrixTable: import('react').FC<Omit<Props, 'initialMatrix'>> = ({ classNa
 
   return (
     <div className={classnames(['container', className])} {...props}>
-      <button onClick={save}>Save</button>
       {!isEditing && <button onClick={makeEditable}>Edit</button>}
+      {isEditing &&  <button onClick={save}>Save</button>}
       {isEditing && <button onClick={reset}>Cancel</button>}
       {isEditing && <button onClick={clear}>Clear</button>}
       <br />
