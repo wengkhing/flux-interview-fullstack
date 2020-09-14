@@ -66,13 +66,22 @@ const MatrixTable: import('react').FC<Omit<Props, 'initialMatrix'>> = ({ classNa
   }
 
   const handleMatrixChange = (plan: string, mileage: string, value: string) => {
+    const price = Number(value)
+    const updateFields = mileage === 'lite' ? {
+      lite: price,
+      standard: price * 2,
+      unlimited: price * 3
+    } : {
+      [mileage]: price
+    }
+
     dispatch({
       type: 'SET_MATRIX',
       payload: {
         ...matrix,
         [plan]: {
           ...matrix[plan],
-          [mileage]: Number(value)
+          ...updateFields
         }
       }
     })
