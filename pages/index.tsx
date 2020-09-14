@@ -1,8 +1,16 @@
 import Head from 'next/head'
 import MatrixTable from '../components/MatrixTable'
 
+export async function getServerSideProps() {
+  const response = await fetch('http://localhost:3000/api/pricing', { method: 'get' })
+  const matrix = response.ok && await response.json();
 
-export default function Home() {
+  return {
+    props: { matrix }
+  }
+}
+
+export default function Home({ matrix }) {
   // You can either fetch the pricing here and pass it to MatrixTable
   // or, you can let MatrixTable handle the fetching
 
@@ -14,7 +22,7 @@ export default function Home() {
       </Head>
 
       <main>
-        <MatrixTable />
+        <MatrixTable initialMatrix={matrix} />
       </main>
 
       <footer>
