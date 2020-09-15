@@ -1,6 +1,7 @@
 import classnames from 'classnames'
 import { useContext } from 'react'
 import { MatrixTableContext, MatrixTableContextProvider } from './context'
+import MatrixDataCell from '../MatrixDataCell'
 
 type Props = {
   initialMatrix?: import('../../types').Matrix
@@ -16,34 +17,133 @@ type Props = {
  */
 const MatrixTable: import('react').FC<Omit<Props, 'initialMatrix'>> = ({ className, children, ...props }) => {
   // State ------------------------------------------------------------------- //
-  const [{ matrix }, dispatch] = useContext(MatrixTableContext)
+  const [{ matrix, isEditing }, dispatch] = useContext(MatrixTableContext)
 
   // Handlers ---------------------------------------------------------------- //
   // You can save (to api) the matrix here. Remember to update originalMatrix when done.
   const save = async () => {
+    await fetch('http://localhost:3000/api/save-pricing', {
+      method: 'post',
+      body: JSON.stringify(matrix)
+    })
 
+    dispatch({
+      type: 'SET_ORIGINAL_MATRIX',
+      payload: matrix
+    })
+    
+    dispatch({
+      type: 'SET_EDITABLE_STATE',
+      payload: false
+    })
+  }
+
+  const makeEditable = () => {
+    dispatch({
+      type: 'SET_EDITABLE_STATE',
+      payload: true
+    })
+  }
+
+  const reset = () => {
+    dispatch({
+      type: 'SET_MATRIX'
+    })
+
+    dispatch({
+      type: 'SET_EDITABLE_STATE',
+      payload: false
+    })
+  }
+
+  const clear = () => {
+    dispatch({
+      type: 'SET_MATRIX',
+      metadata: {
+        resetToEmpty: true
+      }
+    })
+  }
+
+  const handleMatrixChange = (plan: string, mileage: string, value: string) => {
+    const price = Number(value)
+    const updateFields = mileage === 'lite' ? {
+      lite: price,
+      standard: price * 2,
+      unlimited: price * 3
+    } : {
+      [mileage]: price
+    }
+
+    dispatch({
+      type: 'SET_MATRIX',
+      payload: {
+        ...matrix,
+        [plan]: {
+          ...matrix[plan],
+          ...updateFields
+        }
+      }
+    })
   }
 
   // Effects ----------------------------------------------------------------- //
 
   // Rendering --------------------------------------------------------------- //
+  const subscriptionPlans = Object.keys(matrix);
+  const mileagePackages = [ 'lite', 'standard', 'unlimited' ];
+
   return (
     <div className={classnames(['container', className])} {...props}>
-      <button onClick={save}>Save</button>
+      {!isEditing && <button onClick={makeEditable}>Edit</button>}
+      {isEditing &&  <button onClick={save}>Save</button>}
+      {isEditing && <button onClick={reset}>Cancel</button>}
+      {isEditing && <button onClick={clear}>Clear</button>}
       <br />
-      <br />
-
-      36months lite:
-      <input 
-        value={matrix["36months"].lite || ''} 
-        onChange={(e) => dispatch({
-          type: 'SOME_ACTION',
-          payload: e.target.value
-        })} />
+      <table>
+        <thead>
+          <tr>
+            <td />
+            {subscriptionPlans.map(column => <td key={column}>{column}</td>)}
+          </tr>
+        </thead>
+        <tbody>
+          {mileagePackages.map(mileage => (
+            <tr key={mileage}>
+              <td>{mileage}</td>
+              {
+                subscriptionPlans.map(plan =>
+                  <MatrixDataCell onChange={(event) => handleMatrixChange(plan, mileage, event.target.value)}
+                    name={`${plan}.${mileage}`}
+                    disabled={!isEditing} key={plan}>
+                    {matrix[plan][mileage]}
+                  </MatrixDataCell>)
+              }
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
       <style jsx>{`
-        .container {
-          
+        thead tr td {
+          font-weight: 600;
+          font-size: 14px;
+          text-align: center;
+        }
+
+        tbody tr td {
+          padding: 8px 12px;
+          font-size: 14px;
+          text-align: center;
+        }
+
+        button {
+          font-size: 16px;
+          padding: 12px 24px;
+          border: 1px solid black;
+          border-radius: 3px;
+          margin-right: 4px;
+          margin-bottom: 16px;
         }
       `}</style>
     </div>

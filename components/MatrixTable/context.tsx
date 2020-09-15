@@ -14,6 +14,10 @@ interface MatrixTableState {
    * to that value; originalMatrix should try to mirror the matrix in our database.
    */
   originalMatrix: import('../../types').Matrix
+  /**
+   * Check if matrix table is in editing state
+   */
+  isEditing: boolean
 }
 
 /**
@@ -40,8 +44,8 @@ type MatrixAction = {
    */
   payload?: import('../../types').Matrix
 } | {
-  type: 'SOME_ACTION',
-  payload: any
+  type: 'SET_EDITABLE_STATE',
+  payload?: boolean
 } // Here you will need to add your other action(s) in order to edit the pricing (remove SOME_ACTION).
 
 /**
@@ -83,6 +87,7 @@ const emptyMatrix = {
 const defaultState: MatrixTableState = {
   matrix: emptyMatrix,
   originalMatrix: emptyMatrix,
+  isEditing: false
 }
 
 /**
@@ -97,10 +102,19 @@ const reducer = (state: MatrixTableState, action: MatrixAction): MatrixTableStat
     case 'SET_MATRIX':
       return {
         ...state,
+        matrix: action.metadata?.resetToEmpty ? emptyMatrix :
+          action.payload ? action.payload :
+          state.originalMatrix
       }
     case 'SET_ORIGINAL_MATRIX':
       return {
-        ...state
+        ...state,
+        originalMatrix: action.payload ? action.payload : emptyMatrix
+      }
+    case 'SET_EDITABLE_STATE':
+      return {
+        ...state,
+        isEditing: action.payload
       }
     default:
       return state
@@ -115,7 +129,11 @@ export const MatrixTableContext = createContext<[MatrixTableState, import('react
  * @param param0 
  */
 export const MatrixTableContextProvider: import('react').FC<ProviderProps> = ({ initialMatrix, children }) => {
-  const state = useReducer(reducer, { matrix: initialMatrix || emptyMatrix, originalMatrix: initialMatrix || emptyMatrix })
+  const state = useReducer(reducer, {
+    matrix: initialMatrix || emptyMatrix,
+    originalMatrix: initialMatrix || emptyMatrix, 
+    isEditing: false
+  })
 
   return (
     <MatrixTableContext.Provider value={state}>

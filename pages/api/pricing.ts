@@ -22,7 +22,8 @@ const defaultPricing = {
 }
 
 export default (_: import('next').NextApiRequest, res: import('next').NextApiResponse) => {
-  const pricing = require('../../public/pricing.json') || defaultPricing
+  const savedPricing = require('../../public/pricing.json')
+  const pricing = Object.keys(savedPricing).length ? savedPricing : defaultPricing
   res.statusCode = 200
   res.json(pricing)
 }
