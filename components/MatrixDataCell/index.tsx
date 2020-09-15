@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from 'react'
 
 type Props = {
+  name: string
   disabled: boolean
 } & import('react').HTMLAttributes<HTMLDivElement>
 
-const MatrixDataCell: import('react').FC<Props> = ({ disabled, onChange, children, ...props }) => {
+const MatrixDataCell: import('react').FC<Props> = ({ name, disabled, onChange, children, ...props }) => {
   const [state, setState] = useState({
     value: children as number
   })
@@ -28,6 +29,7 @@ const MatrixDataCell: import('react').FC<Props> = ({ disabled, onChange, childre
   return (
     <td>
       <input type='number'
+        data-testid={name}
         value={state.value}
         onChange={handleChange}
         disabled={disabled} />

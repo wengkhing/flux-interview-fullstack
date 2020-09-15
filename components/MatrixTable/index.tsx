@@ -114,6 +114,7 @@ const MatrixTable: import('react').FC<Omit<Props, 'initialMatrix'>> = ({ classNa
               {
                 subscriptionPlans.map(plan =>
                   <MatrixDataCell onChange={(event) => handleMatrixChange(plan, mileage, event.target.value)}
+                    name={`${plan}.${mileage}`}
                     disabled={!isEditing} key={plan}>
                     {matrix[plan][mileage]}
                   </MatrixDataCell>)
