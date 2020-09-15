@@ -35,7 +35,11 @@ const MatrixDataCell: import('react').FC<Props> = ({ name, disabled, onChange, c
         disabled={disabled} />
 
       <style jsx>{`
-
+        td input {
+          width: 100px;
+          padding: 12px 8px;
+          font-size: 16px;
+        }
       `}</style>
     </td>
   )

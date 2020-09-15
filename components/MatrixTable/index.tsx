@@ -125,8 +125,25 @@ const MatrixTable: import('react').FC<Omit<Props, 'initialMatrix'>> = ({ classNa
       </table>
 
       <style jsx>{`
-        .container {
-          
+        thead tr td {
+          font-weight: 600;
+          font-size: 14px;
+          text-align: center;
+        }
+
+        tbody tr td {
+          padding: 8px 12px;
+          font-size: 14px;
+          text-align: center;
+        }
+
+        button {
+          font-size: 16px;
+          padding: 12px 24px;
+          border: 1px solid black;
+          border-radius: 3px;
+          margin-right: 4px;
+          margin-bottom: 16px;
         }
       `}</style>
     </div>
