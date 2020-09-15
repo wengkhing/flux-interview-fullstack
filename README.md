@@ -62,6 +62,12 @@ We are using `React Context` and `useReducer` to handle the state, `styled-jsx` 
 
 ## Getting Started
 
+Before running the server, create this `public/pricing.json` file, you can run this command
+
+```bash
+echo "{}" > public/pricing.json
+```
+
 First, run the development server:
 
 ```bash
@@ -74,6 +80,15 @@ yarn dev
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+
+## Testing
+
+```bash
+npm run test
+
+# or
+yarn test
+```
 
 ## Clone and push to your own repository
 
